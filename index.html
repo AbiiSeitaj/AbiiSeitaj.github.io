@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SysAdmin Command Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090c12;
+    --bg2: #0d1117;
+    --bg3: #111827;
+    --panel: #141c2b;
+    --panel2: #1a2540;
+    --border: #1e2d45;
+    --border2: #263552;
+    --blue: #1e6fd9;
+    --blue2: #2a8aff;
+    --blue3: #4da3ff;
+    --orange: #f07020;
+    --orange2: #ff8c38;
+    --orange3: #ffa55e;
+    --text: #c8d8f0;
+    --text2: #7a9cc0;
+    --text3: #4a6888;
+    --green: #3ddc97;
+    --pipe: #9b5de5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(30,111,217,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .orb2 {
+    position: fixed;
+    bottom: -150px; right: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(240,112,32,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(9,12,18,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--orange), var(--blue));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-text span { color: var(--orange2); }
+
+  .header-badge {
+    font-size: 0.7rem;
+    color: var(--text3);
+    border: 1px solid var(--border2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ─── LAYOUT ─── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+  }
+
+  .sidebar-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text3);
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  .cmd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cmd-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s ease;
+    text-align: left;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  .cmd-btn:hover {
+    background: var(--panel2);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  .cmd-btn.active {
+    background: rgba(30, 111, 217, 0.12);
+    border-color: var(--blue);
+    color: var(--blue3);
+  }
+
+  .cmd-btn .cmd-name {
+    font-weight: 700;
+    color: var(--orange2);
+    min-width: 52px;
+  }
+
+  .cmd-btn.active .cmd-name { color: var(--blue3); }
+
+  .cmd-btn .cmd-desc {
+    font-size: 0.72rem;
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ─── MAIN PANEL ─── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ─── COMMAND OUTPUT / TERMINAL ─── */
+  .terminal-box {
+    background: #050810;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  }
+
+  .terminal-header {
+    background: var(--panel);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .terminal-title {
+    margin-left: 8px;
+    font-size: 0.72rem;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  .terminal-body {
+    padding: 18px 20px;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .prompt {
+    color: var(--green);
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .command-output {
+    color: var(--text);
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 200px;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  .command-output .cmd-part { color: var(--orange2); font-weight: 700; }
+  .command-output .flag-part { color: var(--blue3); }
+  .command-output .pipe-sym { color: var(--pipe); font-weight: 700; margin: 0 4px; }
+  .command-output .arg-part { color: var(--green); }
+
+  .copy-btn {
+    margin-left: auto;
+    background: var(--panel2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover { border-color: var(--orange); color: var(--orange2); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  /* ─── COMMAND CARD ─── */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .card-cmd-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--orange2);
+    letter-spacing: -0.02em;
+  }
+
+  .card-cmd-full {
+    font-size: 0.8rem;
+    color: var(--text3);
+  }
+
+  .card-man-link {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--text3);
+    text-decoration: none;
+    border: 1px solid var(--border2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .card-man-link:hover { color: var(--blue3); border-color: var(--blue); }
+
+  /* ─── OPTIONS GRID ─── */
+  .options-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .opt-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+    max-width: 300px;
+  }
+
+  .opt-btn:hover {
+    background: rgba(30,111,217,0.1);
+    border-color: var(--blue);
+    color: var(--text);
+  }
+
+  .opt-btn.selected {
+    background: rgba(30,111,217,0.18);
+    border-color: var(--blue2);
+    color: var(--blue3);
+  }
+
+  .opt-flag {
+    color: var(--orange3);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .opt-btn.selected .opt-flag { color: var(--blue3); }
+
+  .opt-desc {
+    font-size: 0.7rem;
+    color: var(--text3);
+    line-height: 1.3;
+  }
+
+  /* ─── ARG INPUT ─── */
+  .arg-section {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .arg-label {
+    font-size: 0.7rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .arg-input {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    flex: 1;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .arg-input:focus { border-color: var(--blue); }
+  .arg-input::placeholder { color: var(--text3); }
+
+  /* ─── PIPE SECTION ─── */
+  .pipe-section {
+    padding: 16px 20px;
+  }
+
+  .pipe-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  .pipe-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text2);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pipe-btn:hover {
+    background: rgba(155,93,229,0.1);
+    border-color: var(--pipe);
+    color: #c89dff;
+  }
+
+  .pipe-btn.active {
+    background: rgba(155,93,229,0.18);
+    border-color: var(--pipe);
+    color: #c89dff;
+  }
+
+  .pipe-sym-icon { color: var(--pipe); font-weight: 700; }
+
+  .pipe-arg-input {
+    background: var(--bg3);
+    border: 1px solid rgba(155,93,229,0.3);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: #c89dff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    width: 180px;
+    outline: none;
+    margin-top: 10px;
+    transition: border-color 0.15s;
+  }
+
+  .pipe-arg-input:focus { border-color: var(--pipe); }
+  .pipe-arg-input::placeholder { color: var(--text3); }
+
+  .pipe-chain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+    align-items: center;
+  }
+
+  .pipe-tag {
+    background: rgba(155,93,229,0.14);
+    border: 1px solid rgba(155,93,229,0.35);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    color: #c89dff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pipe-tag-remove {
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: color 0.1s;
+  }
+
+  .pipe-tag-remove:hover { color: #ff5f57; }
+
+  /* ─── CLEAR / RESET ─── */
+  .clear-btn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 8px;
+  }
+
+  .clear-btn:hover { border-color: #ff5f57; color: #ff5f57; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.7rem;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card { animation: fadeSlide 0.2s ease; }
+
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .cmd-list { flex-direction: row; flex-wrap: wrap; }
+    .cmd-btn { flex: 1; min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+<div class="orb2"></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">Cmd<span>Forge</span></div>
+  </div>
+  <div class="header-badge">Linux · SysAdmin · v2.0</div>
+</header>
+
+<div class="container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Commands</div>
+    <div class="cmd-list" id="cmdList"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Terminal output -->
+    <div class="terminal-box">
+      <div class="terminal-header">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="terminal-title">terminal — bash</span>
+      </div>
+      <div class="terminal-body">
+        <span class="prompt">user@host:~$</span>
+        <div class="command-output" id="cmdOutput"><span style="color:var(--text3)">← select a command to begin</span></div>
+        <button class="copy-btn" id="copyBtn" onclick="copyCommand()">⎘ copy</button>
+        <button class="clear-btn" onclick="clearAll()">✕ clear</button>
+      </div>
+    </div>
+
+    <!-- Command card -->
+    <div id="cardArea"></div>
+  </main>
+</div>
+
+<footer>CmdForge — free to host, zero dependencies · built for sysadmins</footer>
+
+<script>
+const COMMANDS = [
+  {
+    name: 'ls',
+    full: 'list directory contents',
+    flags: [
+      { f: '-l',  d: 'Long format (permissions, owner, size, date)' },
+      { f: '-a',  d: 'Show hidden files (starting with .)' },
+      { f: '-h',  d: 'Human-readable sizes (KB, MB)' },
+      { f: '-R',  d: 'Recursive — list subdirectories' },
+      { f: '-t',  d: 'Sort by modification time' },
+      { f: '-S',  d: 'Sort by file size (largest first)' },
+      { f: '-r',  d: 'Reverse sort order' },
+      { f: '-1',  d: 'One file per line' },
+      { f: '--color=auto', d: 'Colorize output' },
+    ],
+    arg: { placeholder: '/path/to/dir  (optional)', label: 'PATH' },
+  },
+  {
+    name: 'grep',
+    full: 'search text with patterns',
+    flags: [
+      { f: '-i',  d: 'Case-insensitive match' },
+      { f: '-r',  d: 'Recursive search in directories' },
+      { f: '-n',  d: 'Show line numbers' },
+      { f: '-v',  d: 'Invert match (show non-matching)' },
+      { f: '-l',  d: 'Print only filenames with matches' },
+      { f: '-c',  d: 'Count matching lines' },
+      { f: '-E',  d: 'Extended regex (ERE)' },
+      { f: '-o',  d: 'Print only matched part' },
+      { f: '--color=auto', d: 'Highlight matches' },
+      { f: '-A 2', d: 'Show 2 lines after match' },
+      { f: '-B 2', d: 'Show 2 lines before match' },
+    ],
+    arg: { placeholder: '"pattern"  file/dir', label: 'PATTERN + FILE' },
+  },
+  {
+    name: 'find',
+    full: 'search for files in a directory',
+    flags: [
+      { f: '-name "*.log"', d: 'Match by name (glob)' },
+      { f: '-iname "*.log"', d: 'Case-insensitive name match' },
+      { f: '-type f',  d: 'Only regular files' },
+      { f: '-type d',  d: 'Only directories' },
+      { f: '-mtime -7', d: 'Modified in last 7 days' },
+      { f: '-size +100M', d: 'Larger than 100 MB' },
+      { f: '-user root', d: 'Owned by specific user' },
+      { f: '-perm 644', d: 'Specific permissions' },
+      { f: '-maxdepth 2', d: 'Limit directory depth' },
+      { f: '-exec ls -lh {} \\;', d: 'Execute command on result' },
+      { f: '-delete',  d: 'Delete found files (careful!)' },
+    ],
+    arg: { placeholder: '/path/to/search', label: 'PATH' },
+  },
+  {
+    name: 'ps',
+    full: 'report current processes',
+    flags: [
+      { f: 'aux',  d: 'All processes, user-oriented format' },
+      { f: '-ef',  d: 'Full-format listing, all processes' },
+      { f: '--sort=-%cpu', d: 'Sort by CPU usage descending' },
+      { f: '--sort=-%mem', d: 'Sort by memory descending' },
+      { f: '-u root', d: 'Show processes for user' },
+      { f: '-p PID', d: 'Show specific process by PID' },
+    ],
+    arg: { placeholder: '', label: 'ARGS' },
+  },
+  {
+    name: 'awk',
+    full: 'pattern scanning & processing',
+    flags: [
+      { f: "-F ':'", d: "Set field separator (e.g. :)" },
+      { f: "'{print $1}'", d: 'Print first field' },
+      { f: "'{print NR, $0}'", d: 'Print line number + line' },
+      { f: "'/pattern/'", d: 'Match pattern' },
+      { f: "'{sum+=$1} END{print sum}'", d: 'Sum a column' },
+      { f: "NR==2", d: 'Only process line 2' },
+    ],
+    arg: { placeholder: 'file.txt', label: 'FILE' },
+  },
+  {
+    name: 'sed',
+    full: 'stream editor for filtering/transforming',
+    flags: [
+      { f: "-i",       d: 'Edit file in-place' },
+      { f: "'s/old/new/g'", d: 'Replace all occurrences' },
+      { f: "'s/old/new/'",  d: 'Replace first occurrence' },
+      { f: "'2d'",     d: 'Delete line 2' },
+      { f: "'/pattern/d'", d: 'Delete lines matching pattern' },
+      { f: "-n '5p'",  d: 'Print only line 5' },
+      { f: "-e 'cmd'", d: 'Add script expression' },
+    ],
+    arg: { placeholder: 'file.txt', label: 'FILE' },
+  },
+  {
+    name: 'tail',
+    full: 'output last part of files',
+    flags: [
+      { f: '-n 20',  d: 'Show last 20 lines' },
+      { f: '-f',     d: 'Follow file (live updates)' },
+      { f: '-F',     d: 'Follow + retry if file rotated' },
+      { f: '-c 500', d: 'Show last 500 bytes' },
+      { f: '--pid=PID', d: 'Stop following when PID dies' },
+    ],
+    arg: { placeholder: '/var/log/syslog', label: 'FILE' },
+  },
+  {
+    name: 'top',
+    full: 'display Linux processes',
+    flags: [
+      { f: '-u user', d: 'Filter by username' },
+      { f: '-p PID',  d: 'Monitor specific PID' },
+      { f: '-d 2',    d: 'Refresh interval (seconds)' },
+      { f: '-n 5',    d: 'Exit after N refreshes' },
+      { f: '-b',      d: 'Batch mode (for scripts)' },
+    ],
+    arg: { placeholder: '', label: 'ARGS' },
+  },
+  {
+    name: 'df',
+    full: 'report disk space usage',
+    flags: [
+      { f: '-h',    d: 'Human-readable sizes' },
+      { f: '-T',    d: 'Show filesystem type' },
+      { f: '-i',    d: 'Show inode info' },
+      { f: '--total', d: 'Show grand total' },
+      { f: '-x tmpfs', d: 'Exclude filesystem type' },
+    ],
+    arg: { placeholder: '/mount/point  (optional)', label: 'PATH' },
+  },
+  {
+    name: 'du',
+    full: 'estimate file/directory space usage',
+    flags: [
+      { f: '-h',      d: 'Human-readable sizes' },
+      { f: '-s',      d: 'Summary (total only)' },
+      { f: '-a',      d: 'All files, not just dirs' },
+      { f: '--max-depth=1', d: 'Limit depth to 1' },
+      { f: '-c',      d: 'Grand total at end' },
+      { f: '--exclude="*.log"', d: 'Exclude pattern' },
+    ],
+    arg: { placeholder: '/path/to/dir', label: 'PATH' },
+  },
+  {
+    name: 'chmod',
+    full: 'change file permissions',
+    flags: [
+      { f: '755',   d: 'rwx for owner, rx for others' },
+      { f: '644',   d: 'rw for owner, r for others' },
+      { f: '600',   d: 'rw for owner only' },
+      { f: '+x',    d: 'Add execute permission' },
+      { f: '-x',    d: 'Remove execute permission' },
+      { f: '-R',    d: 'Apply recursively' },
+      { f: 'u+s',   d: 'Set SUID bit' },
+      { f: 'g+s',   d: 'Set SGID bit' },
+    ],
+    arg: { placeholder: 'file_or_dir', label: 'TARGET' },
+  },
+  {
+    name: 'chown',
+    full: 'change file owner/group',
+    flags: [
+      { f: '-R',         d: 'Apply recursively' },
+      { f: '--from=old', d: 'Only change if current owner matches' },
+      { f: 'user:group', d: 'Set both owner and group' },
+      { f: ':group',     d: 'Change group only' },
+    ],
+    arg: { placeholder: 'user:group  file', label: 'OWNER FILE' },
+  },
+  {
+    name: 'curl',
+    full: 'transfer data from/to server',
+    flags: [
+      { f: '-o file',       d: 'Save output to file' },
+      { f: '-O',            d: 'Save with remote filename' },
+      { f: '-L',            d: 'Follow redirects' },
+      { f: '-I',            d: 'Show headers only' },
+      { f: '-s',            d: 'Silent mode' },
+      { f: '-X POST',       d: 'Use POST method' },
+      { f: "-H 'Header: v'", d: 'Add HTTP header' },
+      { f: "-d 'data'",     d: 'Send POST data' },
+      { f: '--insecure',    d: 'Skip SSL verification' },
+      { f: '-u user:pass',  d: 'Basic auth' },
+    ],
+    arg: { placeholder: 'https://example.com', label: 'URL' },
+  },
+  {
+    name: 'ssh',
+    full: 'secure shell remote login',
+    flags: [
+      { f: '-p 2222',    d: 'Custom port' },
+      { f: '-i key.pem', d: 'Identity file (private key)' },
+      { f: '-L 8080:localhost:80', d: 'Local port forwarding' },
+      { f: '-R 8080:localhost:80', d: 'Remote port forwarding' },
+      { f: '-N',         d: 'No remote command (tunnels only)' },
+      { f: '-v',         d: 'Verbose (debug)' },
+      { f: '-A',         d: 'Forward SSH agent' },
+      { f: '-X',         d: 'Enable X11 forwarding' },
+    ],
+    arg: { placeholder: 'user@hostname', label: 'USER@HOST' },
+  },
+  {
+    name: 'rsync',
+    full: 'fast, versatile file copying',
+    flags: [
+      { f: '-a',         d: 'Archive mode (recursive + preserve)' },
+      { f: '-v',         d: 'Verbose output' },
+      { f: '-z',         d: 'Compress during transfer' },
+      { f: '-P',         d: 'Show progress + partial' },
+      { f: '-n',         d: 'Dry run (no changes)' },
+      { f: '--delete',   d: 'Delete files not in source' },
+      { f: '--exclude="*.log"', d: 'Exclude pattern' },
+      { f: '-e ssh',     d: 'Use SSH as transport' },
+    ],
+    arg: { placeholder: 'src/  dest/', label: 'SRC DEST' },
+  },
+  {
+    name: 'wc',
+    full: 'word, line, character count',
+    flags: [
+      { f: '-l',  d: 'Count lines' },
+      { f: '-w',  d: 'Count words' },
+      { f: '-c',  d: 'Count bytes' },
+      { f: '-m',  d: 'Count characters' },
+    ],
+    arg: { placeholder: 'file.txt  (or use pipe)', label: 'FILE' },
+  },
+  {
+    name: 'tar',
+    full: 'tape archive utility',
+    flags: [
+      { f: '-c',       d: 'Create archive' },
+      { f: '-x',       d: 'Extract archive' },
+      { f: '-v',       d: 'Verbose output' },
+      { f: '-z',       d: 'Compress with gzip (.tar.gz)' },
+      { f: '-j',       d: 'Compress with bzip2 (.tar.bz2)' },
+      { f: '-J',       d: 'Compress with xz (.tar.xz)' },
+      { f: '-f file.tar', d: 'Specify archive filename' },
+      { f: '-C /dest', d: 'Extract to specific directory' },
+      { f: '--list',   d: 'List archive contents' },
+    ],
+    arg: { placeholder: 'archive.tar.gz  files/', label: 'ARCHIVE + SRC' },
+  },
+  {
+    name: 'systemctl',
+    full: 'control the systemd manager',
+    flags: [
+      { f: 'start svc',   d: 'Start a service' },
+      { f: 'stop svc',    d: 'Stop a service' },
+      { f: 'restart svc', d: 'Restart a service' },
+      { f: 'status svc',  d: 'Show service status' },
+      { f: 'enable svc',  d: 'Enable at boot' },
+      { f: 'disable svc', d: 'Disable at boot' },
+      { f: 'reload svc',  d: 'Reload config without restart' },
+      { f: '--failed',    d: 'List failed units' },
+      { f: 'list-units',  d: 'List all loaded units' },
+    ],
+    arg: { placeholder: '', label: 'ARGS' },
+  },
+  {
+    name: 'journalctl',
+    full: 'query systemd journal logs',
+    flags: [
+      { f: '-u svcname',   d: 'Show logs for specific unit' },
+      { f: '-f',           d: 'Follow (live tail)' },
+      { f: '-n 50',        d: 'Last 50 lines' },
+      { f: '-p err',       d: 'Filter by priority (err/warn/info)' },
+      { f: '--since "1h ago"', d: 'Since relative time' },
+      { f: '--until now',  d: 'Until time' },
+      { f: '-b',           d: 'Since last boot' },
+      { f: '--no-pager',   d: 'Output without pager' },
+      { f: '-o json',      d: 'JSON output format' },
+    ],
+    arg: { placeholder: '', label: 'ARGS' },
+  },
+  {
+    name: 'netstat',
+    full: 'network statistics',
+    flags: [
+      { f: '-t',  d: 'TCP connections' },
+      { f: '-u',  d: 'UDP connections' },
+      { f: '-l',  d: 'Listening sockets only' },
+      { f: '-n',  d: 'Show numeric addresses (no DNS)' },
+      { f: '-p',  d: 'Show process PID/name' },
+      { f: '-r',  d: 'Show routing table' },
+      { f: '-s',  d: 'Show per-protocol stats' },
+    ],
+    arg: { placeholder: '', label: 'ARGS' },
+  },
+];
+
+// Pipe commands (common targets)
+const PIPE_CMDS = [
+  { cmd: 'grep ""',     label: 'grep', arg: true, placeholder: '"pattern"' },
+  { cmd: 'wc -l',      label: 'wc -l', arg: false },
+  { cmd: 'sort',       label: 'sort', arg: false },
+  { cmd: 'sort -r',    label: 'sort -r', arg: false },
+  { cmd: 'uniq',       label: 'uniq', arg: false },
+  { cmd: 'uniq -c',    label: 'uniq -c', arg: false },
+  { cmd: 'head -n 20', label: 'head', arg: true, placeholder: '-n 20' },
+  { cmd: 'tail -n 20', label: 'tail', arg: true, placeholder: '-n 20' },
+  { cmd: 'awk \'{print $1}\'', label: 'awk', arg: true, placeholder: "'{print $1}'" },
+  { cmd: 'sed \'s/a/b/g\'', label: 'sed', arg: true, placeholder: "'s/old/new/g'" },
+  { cmd: 'cut -d: -f1', label: 'cut', arg: true, placeholder: '-d: -f1' },
+  { cmd: 'tr -s " "',  label: 'tr', arg: true, placeholder: '-s " "' },
+  { cmd: 'tee out.txt', label: 'tee', arg: true, placeholder: 'out.txt' },
+  { cmd: 'less',       label: 'less', arg: false },
+  { cmd: 'xargs',      label: 'xargs', arg: true, placeholder: 'cmd' },
+];
+
+let state = {
+  cmd: null,
+  selectedFlags: new Set(),
+  arg: '',
+  pipes: [],         // array of { label, cmd }
+};
+
+// ─── RENDER SIDEBAR ───
+function renderSidebar() {
+  const list = document.getElementById('cmdList');
+  list.innerHTML = COMMANDS.map(c => `
+    <button class="cmd-btn" onclick="selectCmd('${c.name}')">
+      <span class="cmd-name">${c.name}</span>
+      <span class="cmd-desc">${c.full}</span>
+    </button>
+  `).join('');
+}
+
+// ─── SELECT COMMAND ───
+function selectCmd(name) {
+  state.cmd = name;
+  state.selectedFlags = new Set();
+  state.arg = '';
+  state.pipes = [];
+
+  // Update sidebar active
+  document.querySelectorAll('.cmd-btn').forEach(b => {
+    b.classList.toggle('active', b.querySelector('.cmd-name').textContent === name);
+  });
+
+  renderCard();
+  updateOutput();
+}
+
+// ─── RENDER CARD ───
+function renderCard() {
+  const c = COMMANDS.find(x => x.name === state.cmd);
+  if (!c) return;
+
+  const area = document.getElementById('cardArea');
+  area.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-cmd-name">${c.name}</div>
+        <div class="card-cmd-full">${c.full}</div>
+        <a class="card-man-link" href="https://man7.org/linux/man-pages/man1/${c.name}.1.html" target="_blank">man page ↗</a>
+      </div>
+
+      <div class="options-section">
+        <div class="section-label">Options / Flags — click to toggle</div>
+        <div class="options-grid" id="optGrid">
+          ${c.flags.map(f => `
+            <button class="opt-btn" onclick="toggleFlag('${escQ(f.f)}')">
+              <span class="opt-flag">${f.f}</span>
+              <span class="opt-desc">${f.d}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      ${c.arg ? `
+      <div class="arg-section">
+        <span class="arg-label">${c.arg.label}</span>
+        <input class="arg-input" id="argInput" placeholder="${c.arg.placeholder}"
+          oninput="state.arg = this.value; updateOutput()" value="${state.arg}">
+      </div>` : ''}
+
+      <div class="pipe-section">
+        <div class="section-label">Pipe to — chain commands with |</div>
+        <div class="pipe-controls">
+          ${PIPE_CMDS.map((p, i) => `
+            <button class="pipe-btn" id="pb${i}" onclick="addPipe(${i})">
+              <span class="pipe-sym-icon">|</span> ${p.label}
+            </button>
+          `).join('')}
+        </div>
+        <div class="pipe-chain" id="pipeChain"></div>
+      </div>
+    </div>
+  `;
+
+  renderPipeChain();
+}
+
+function escQ(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ─── TOGGLE FLAG ───
+function toggleFlag(flag) {
+  if (state.selectedFlags.has(flag)) state.selectedFlags.delete(flag);
+  else state.selectedFlags.add(flag);
+
+  // Update button visuals
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    const f = b.querySelector('.opt-flag').textContent;
+    b.classList.toggle('selected', state.selectedFlags.has(f));
+  });
+  updateOutput();
+}
+
+// ─── PIPE ───
+function addPipe(idx) {
+  const p = PIPE_CMDS[idx];
+  if (p.arg) {
+    const val = prompt(`Arguments for "${p.label}":`, p.placeholder) ;
+    if (val === null) return;
+    state.pipes.push({ label: p.label, cmd: p.cmd.replace(/"".*|'[^']*'|\S+$/, val) + (val && !p.cmd.includes(val) ? ' ' + val : '') });
+    // simpler: just store label + user input
+    state.pipes[state.pipes.length-1] = { label: p.label + ' ' + val, cmd: p.label + ' ' + val };
+  } else {
+    state.pipes.push({ label: p.label, cmd: p.cmd });
+  }
+  renderPipeChain();
+  updateOutput();
+}
+
+function removePipe(i) {
+  state.pipes.splice(i, 1);
+  renderPipeChain();
+  updateOutput();
+}
+
+function renderPipeChain() {
+  const el = document.getElementById('pipeChain');
+  if (!el) return;
+  if (!state.pipes.length) { el.innerHTML = ''; return; }
+  el.innerHTML = state.pipes.map((p, i) => `
+    <div class="pipe-tag">
+      <span style="color:var(--pipe)">|</span> ${p.label}
+      <span class="pipe-tag-remove" onclick="removePipe(${i})">✕</span>
+    </div>
+  `).join('');
+}
+
+// ─── BUILD COMMAND STRING ───
+function buildCommand() {
+  if (!state.cmd) return '';
+  const flags = [...state.selectedFlags].join(' ');
+  const arg = state.arg.trim();
+  let parts = [state.cmd];
+  if (flags) parts.push(flags);
+  if (arg) parts.push(arg);
+  let cmd = parts.join(' ');
+  if (state.pipes.length) {
+    cmd += ' ' + state.pipes.map(p => '| ' + p.cmd).join(' ');
+  }
+  return cmd;
+}
+
+// ─── UPDATE OUTPUT ───
+function updateOutput() {
+  const raw = buildCommand();
+  const out = document.getElementById('cmdOutput');
+  if (!raw) {
+    out.innerHTML = '<span style="color:var(--text3)">← select a command to begin</span>';
+    return;
+  }
+
+  // Colorize
+  const c = COMMANDS.find(x => x.name === state.cmd);
+  const flags = [...state.selectedFlags];
+  const arg = state.arg.trim();
+
+  let html = `<span class="cmd-part">${state.cmd}</span>`;
+  if (flags.length) html += ` <span class="flag-part">${flags.join(' ')}</span>`;
+  if (arg) html += ` <span class="arg-part">${arg}</span>`;
+
+  state.pipes.forEach(p => {
+    html += ` <span class="pipe-sym">|</span><span class="cmd-part"> ${p.cmd.split(' ')[0]}</span>`;
+    const rest = p.cmd.split(' ').slice(1).join(' ');
+    if (rest) html += ` <span class="flag-part">${rest}</span>`;
+  });
+
+  out.innerHTML = html;
+}
+
+// ─── COPY ───
+function copyCommand() {
+  const raw = buildCommand();
+  if (!raw) return;
+  navigator.clipboard.writeText(raw).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '⎘ copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ─── CLEAR ───
+function clearAll() {
+  state.selectedFlags = new Set();
+  state.arg = '';
+  state.pipes = [];
+  if (state.cmd) renderCard();
+  updateOutput();
+}
+
+// ─── INIT ───
+renderSidebar();
+selectCmd('ls');
+</script>
+</body>
+</html>
