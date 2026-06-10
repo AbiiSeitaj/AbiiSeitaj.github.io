@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SysAdmin Command Forge</title>
+<title>Shell Crafter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -72,7 +72,7 @@
     z-index: 0;
   }
 
-  /* ─── HEADER ─── */
+  /* Header */
   header {
     position: relative;
     z-index: 10;
@@ -118,7 +118,7 @@
     text-transform: uppercase;
   }
 
-  /* ─── LAYOUT ─── */
+  /* Layout */
   .container {
     position: relative;
     z-index: 1;
@@ -130,7 +130,7 @@
     gap: 20px;
   }
 
-  /* ─── SIDEBAR ─── */
+  /* Sidebar */
   .sidebar {
     position: sticky;
     top: 24px;
@@ -196,14 +196,14 @@
     text-overflow: ellipsis;
   }
 
-  /* ─── MAIN PANEL ─── */
+  /* Main panel */
   .main {
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
-  /* ─── COMMAND OUTPUT / TERMINAL ─── */
+  /* Command output */
   .terminal-box {
     background: #050810;
     border: 1px solid var(--border);
@@ -280,7 +280,7 @@
   .copy-btn:hover { border-color: var(--orange); color: var(--orange2); }
   .copy-btn.copied { border-color: var(--green); color: var(--green); }
 
-  /* ─── COMMAND CARD ─── */
+  /* Command card */
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -322,7 +322,7 @@
 
   .card-man-link:hover { color: var(--blue3); border-color: var(--blue); }
 
-  /* ─── OPTIONS GRID ─── */
+  /* Options grid */
   .options-section {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
@@ -384,7 +384,7 @@
     line-height: 1.3;
   }
 
-  /* ─── ARG INPUT ─── */
+  /* Argument input */
   .arg-section {
     padding: 14px 20px;
     border-bottom: 1px solid var(--border);
@@ -417,7 +417,7 @@
   .arg-input:focus { border-color: var(--blue); }
   .arg-input::placeholder { color: var(--text3); }
 
-  /* ─── PIPE SECTION ─── */
+  /* Pipe section */
   .pipe-section {
     padding: 16px 20px;
   }
@@ -505,7 +505,7 @@
 
   .pipe-tag-remove:hover { color: #ff5f57; }
 
-  /* ─── CLEAR / RESET ─── */
+  /* Clear / reset */
   .clear-btn {
     background: transparent;
     border: 1px solid var(--border2);
@@ -521,7 +521,7 @@
 
   .clear-btn:hover { border-color: #ff5f57; color: #ff5f57; }
 
-  /* ─── FOOTER ─── */
+  /* Footer */
   footer {
     position: relative;
     z-index: 1;
@@ -532,13 +532,13 @@
     border-top: 1px solid var(--border);
   }
 
-  /* ─── SCROLLBAR ─── */
+  /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg2); }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
 
-  /* ─── ANIMATIONS ─── */
+  /* Animations */
   @keyframes fadeSlide {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -552,6 +552,68 @@
     .cmd-list { flex-direction: row; flex-wrap: wrap; }
     .cmd-btn { flex: 1; min-width: 120px; }
   }
+
+  /* Shell Crafter refresh: calmer UI, light/dark themes, pipeline workflow */
+  :root {
+    color-scheme: light;
+    --bg:#f6f7f9; --bg2:#eef1f5; --bg3:#e6eaf0; --panel:#fff; --panel2:#f2f4f7;
+    --border:#d8dee8; --border2:#bfc8d5; --blue:#2563eb; --blue2:#2563eb; --blue3:#174dbd;
+    --orange:#a16207; --orange2:#174dbd; --orange3:#174dbd; --text:#18202b; --text2:#5f6d7d;
+    --text3:#7d8898; --green:#0f8a5f; --pipe:#7c3aed; --shadow:0 18px 55px rgba(20,31,46,.10);
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:#111317; --bg2:#15181d; --bg3:#20242b; --panel:#181b20; --panel2:#20242b;
+    --border:#2d333d; --border2:#3b4350; --blue:#78a6ff; --blue2:#8fb6ff; --blue3:#b8ceff;
+    --orange:#e0b95b; --orange2:#b8ceff; --orange3:#b8ceff; --text:#eef2f7; --text2:#a2acba;
+    --text3:#778293; --green:#56d39b; --pipe:#c6a7ff; --shadow:0 20px 60px rgba(0,0,0,.28);
+  }
+  body { background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.45; }
+  body::before, body::after, .orb2 { display:none; }
+  header { position:sticky; top:0; padding:14px 24px; background:color-mix(in srgb,var(--panel) 90%,transparent); border-bottom-color:var(--border); box-shadow:none; }
+  .logo::before { content:"$"; width:34px; height:34px; border-radius:8px; display:grid; place-items:center; background:var(--text); color:var(--bg); font-family:"SFMono-Regular",Consolas,monospace; font-weight:800; }
+  .logo-icon{display:none;} .logo-text { font-family:inherit; font-size:1rem; letter-spacing:0; } .logo-text span { color:inherit; }
+  .header-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .theme-btn { background:transparent; border:1px solid var(--border2); color:var(--text2); border-radius:7px; min-height:36px; padding:0 12px; cursor:pointer; }
+  .theme-btn:hover { border-color:var(--blue); color:var(--blue3); }
+  .header-badge { border-radius:7px; }
+  .container { max-width:1360px; grid-template-columns:290px minmax(0,1fr); }
+  .sidebar { top:76px; } .sidebar-label,.section-label { color:var(--text3); font-weight:750; }
+  .cmd-search { width:100%; min-height:38px; border-radius:7px; border:1px solid var(--border); background:var(--panel2); color:var(--text); outline:none; padding:0 11px; margin-bottom:10px; }
+  .cmd-search:focus { border-color:var(--blue); background:var(--panel); }
+  .pipe-hint { display:none; border:1px solid var(--blue); background:color-mix(in srgb,var(--blue) 12%,var(--panel)); color:var(--blue3); border-radius:7px; padding:9px 10px; font-size:.82rem; margin-bottom:10px; }
+  .pipe-hint.show { display:block; }
+  .cmd-list { gap:6px; max-height:calc(100vh - 190px); overflow:auto; padding-right:2px; }
+  .cmd-btn { background:transparent; border-color:transparent; color:var(--text2); display:grid; grid-template-columns:64px minmax(0,1fr); width:100%; }
+  .cmd-btn:hover { background:var(--panel2); border-color:transparent; } .cmd-btn.active { background:color-mix(in srgb,var(--blue) 12%,var(--panel)); border-color:var(--blue); color:var(--blue3); }
+  .cmd-btn .cmd-name, .cmd-btn.active .cmd-name { color:var(--blue3); }
+  .terminal-box,.card,.explain-box,.pipeline-strip { background:var(--panel); border-color:var(--border); border-radius:8px; box-shadow:var(--shadow); }
+  .terminal-box { background:#10141b; overflow:hidden; } html[data-theme="dark"] .terminal-box { background:#0a0d12; }
+  .terminal-header { background:transparent; border-bottom-color:rgba(255,255,255,.08); } .terminal-title,.dot { opacity:.75; }
+  .terminal-body { min-height:104px; align-items:flex-start; } .command-output { color:#eef2f7; font-family:"SFMono-Regular",Consolas,monospace; font-size:clamp(.9rem,1.6vw,1rem); }
+  .copy-btn,.clear-btn,.add-pipe-btn { border-radius:7px; min-height:36px; background:var(--panel); color:var(--text2); border:1px solid var(--border2); padding:0 12px; }
+  .copy-btn:hover,.add-pipe-btn:hover { border-color:var(--blue); color:var(--blue3); } .clear-btn:hover { border-color:#c2410c; color:#c2410c; }
+  .explain-box { padding:16px 18px; box-shadow:none; } .explain-text { margin-top:8px; color:var(--text); font-size:.95rem; }
+  .explain-list { margin:12px 0 0; padding:0; list-style:none; display:grid; gap:8px; }
+  .explain-list li { border-left:3px solid var(--blue); padding-left:10px; color:var(--text2); font-size:.9rem; }
+  .pipeline-strip { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 14px; box-shadow:none; }
+  .stage-chip { min-height:34px; border-radius:7px; border:1px solid var(--border); background:var(--panel2); padding:0 10px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+  .stage-chip.active { border-color:var(--blue); background:color-mix(in srgb,var(--blue) 12%,var(--panel)); color:var(--blue3); }
+  .stage-index { color:var(--text3); font-size:.75rem; } .stage-remove { border:0; background:transparent; color:var(--text3); cursor:pointer; padding:0 1px; font-size:1rem; line-height:1; }
+  .stage-remove:hover { color:#c2410c; } .add-pipe-btn.active { border-color:var(--pipe); color:var(--pipe); }
+  .card-header,.options-section,.arg-section,.pipe-section { border-color:var(--border); } .card-cmd-name { font-family:"SFMono-Regular",Consolas,monospace; color:var(--blue3); }
+  .opt-btn,.arg-input { background:var(--panel2); border-color:var(--border); color:var(--text2); }
+  .opt-btn:hover,.opt-btn.selected,.arg-input:focus { border-color:var(--blue); background:var(--panel); color:var(--text); }
+  .opt-flag,.opt-btn.selected .opt-flag { color:var(--blue3); } .card-man-link { border-radius:7px; } footer { border-top-color:var(--border); }
+  @media (max-width:620px) { header,.terminal-body,.card-header,.arg-section { align-items:stretch; flex-direction:column; } .header-actions { justify-content:flex-start; } .copy-btn,.clear-btn,.theme-btn,.add-pipe-btn { flex:1; } }
+
+  /* Final polish */
+  .cmd-btn, .opt-btn, .copy-btn, .clear-btn, .add-pipe-btn, .theme-btn, .card-man-link, .arg-input { font-family: inherit; }
+  .cmd-btn { grid-template-columns: 78px minmax(0,1fr); }
+  .cmd-desc, .opt-desc { font-family: inherit; letter-spacing: 0; }
+  .header-badge { letter-spacing: .04em; }
+  .opt-btn { align-items: center; }
+  .opt-desc { line-height: 1.25; }
 </style>
 </head>
 <body>
@@ -559,16 +621,16 @@
 
 <header>
   <div class="logo">
-    <div class="logo-icon">⚡</div>
-    <div class="logo-text">Cmd<span>Forge</span></div>
+    <div class="logo-icon"></div>
+    <div class="logo-text">Shell<span> Crafter</span></div>
   </div>
-  <div class="header-badge">Linux · SysAdmin · v2.0</div>
+  <div class="header-actions"><button class="theme-btn" id="themeBtn" type="button">Dark</button><div class="header-badge">Static - GitHub Pages ready</div></div>
 </header>
 
 <div class="container">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-label">Commands</div>
+    <div class="sidebar-label">Commands</div><input class="cmd-search" id="cmdSearch" type="search" placeholder="Search commands"><div class="pipe-hint" id="pipeHint">Choose the next command for the pipeline.</div>
     <div class="cmd-list" id="cmdList"></div>
   </aside>
 
@@ -580,22 +642,30 @@
         <div class="dot dot-r"></div>
         <div class="dot dot-y"></div>
         <div class="dot dot-g"></div>
-        <span class="terminal-title">terminal — bash</span>
+        <span class="terminal-title">bash command</span>
       </div>
       <div class="terminal-body">
         <span class="prompt">user@host:~$</span>
-        <div class="command-output" id="cmdOutput"><span style="color:var(--text3)">← select a command to begin</span></div>
-        <button class="copy-btn" id="copyBtn" onclick="copyCommand()">⎘ copy</button>
-        <button class="clear-btn" onclick="clearAll()">✕ clear</button>
+        <div class="command-output" id="cmdOutput"><span style="color:var(--text3)">select a command to begin</span></div>
+        <button class="copy-btn" id="copyBtn" onclick="copyCommand()">Copy</button>
+        <button class="clear-btn" onclick="clearAll()">Clear</button>
       </div>
     </div>
+
+    <section class="explain-box" aria-label="Command explanation">
+      <div class="section-label">What this command does</div>
+      <div class="explain-text" id="explainText"></div>
+      <ul class="explain-list" id="explainList"></ul>
+    </section>
+
+    <nav class="pipeline-strip" id="pipelineStrip" aria-label="Pipeline stages"></nav>
 
     <!-- Command card -->
     <div id="cardArea"></div>
   </main>
 </div>
 
-<footer>CmdForge — free to host, zero dependencies · built for sysadmins</footer>
+<footer>Shell Crafter - free to host, zero dependencies - built for sysadmins</footer>
 
 <script>
 const COMMANDS = [
@@ -606,7 +676,7 @@ const COMMANDS = [
       { f: '-l',  d: 'Long format (permissions, owner, size, date)' },
       { f: '-a',  d: 'Show hidden files (starting with .)' },
       { f: '-h',  d: 'Human-readable sizes (KB, MB)' },
-      { f: '-R',  d: 'Recursive — list subdirectories' },
+      { f: '-R',  d: 'Recursive - list subdirectories' },
       { f: '-t',  d: 'Sort by modification time' },
       { f: '-S',  d: 'Sort by file size (largest first)' },
       { f: '-r',  d: 'Reverse sort order' },
@@ -888,80 +958,147 @@ const COMMANDS = [
   },
 ];
 
-// Pipe commands (common targets)
-const PIPE_CMDS = [
-  { cmd: 'grep ""',     label: 'grep', arg: true, placeholder: '"pattern"' },
-  { cmd: 'wc -l',      label: 'wc -l', arg: false },
-  { cmd: 'sort',       label: 'sort', arg: false },
-  { cmd: 'sort -r',    label: 'sort -r', arg: false },
-  { cmd: 'uniq',       label: 'uniq', arg: false },
-  { cmd: 'uniq -c',    label: 'uniq -c', arg: false },
-  { cmd: 'head -n 20', label: 'head', arg: true, placeholder: '-n 20' },
-  { cmd: 'tail -n 20', label: 'tail', arg: true, placeholder: '-n 20' },
-  { cmd: 'awk \'{print $1}\'', label: 'awk', arg: true, placeholder: "'{print $1}'" },
-  { cmd: 'sed \'s/a/b/g\'', label: 'sed', arg: true, placeholder: "'s/old/new/g'" },
-  { cmd: 'cut -d: -f1', label: 'cut', arg: true, placeholder: '-d: -f1' },
-  { cmd: 'tr -s " "',  label: 'tr', arg: true, placeholder: '-s " "' },
-  { cmd: 'tee out.txt', label: 'tee', arg: true, placeholder: 'out.txt' },
-  { cmd: 'less',       label: 'less', arg: false },
-  { cmd: 'xargs',      label: 'xargs', arg: true, placeholder: 'cmd' },
-];
+// Command registry. A future man-page importer can call ShellCrafter.registerCommand({...}).
+const commandRegistry = new Map();
+COMMANDS.forEach(command => commandRegistry.set(command.name, command));
 
 let state = {
-  cmd: null,
-  selectedFlags: new Set(),
-  arg: '',
-  pipes: [],         // array of { label, cmd }
+  activeStage: 0,
+  appendNext: false,
+  query: '',
+  stages: []
 };
 
-// ─── RENDER SIDEBAR ───
+function registerCommand(command) {
+  const normalized = {
+    name: command.name,
+    full: command.full || 'custom command',
+    flags: Array.isArray(command.flags) ? command.flags : [],
+    arg: command.arg || { placeholder: '', label: 'ARGS' },
+    sourceUrl: command.sourceUrl || ''
+  };
+  commandRegistry.set(normalized.name, normalized);
+  renderAll();
+  return normalized;
+}
+
+function getCommands() {
+  return [...commandRegistry.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function getCommand(name) {
+  return commandRegistry.get(name);
+}
+
+function createStage(commandName) {
+  return { commandName, selectedFlags: [], arg: '' };
+}
+
+function getActiveStage() {
+  return state.stages[state.activeStage] || null;
+}
+
+function selectCmd(name) {
+  if (!state.stages.length) {
+    state.stages.push(createStage(name));
+    state.activeStage = 0;
+  } else if (state.appendNext) {
+    state.stages.push(createStage(name));
+    state.activeStage = state.stages.length - 1;
+    state.appendNext = false;
+  } else {
+    state.stages[state.activeStage] = createStage(name);
+  }
+  renderAll();
+}
+
+function toggleFlag(flag) {
+  const stage = getActiveStage();
+  if (!stage) return;
+  stage.selectedFlags = stage.selectedFlags.includes(flag)
+    ? stage.selectedFlags.filter(item => item !== flag)
+    : [...stage.selectedFlags, flag];
+  renderAll();
+}
+
+function setArg(value) {
+  const stage = getActiveStage();
+  if (!stage) return;
+  stage.arg = value;
+  updateOutput();
+}
+
+function startPipe() {
+  state.appendNext = !state.appendNext;
+  renderSidebar();
+  renderPipeline();
+}
+
+function setActiveStage(index) {
+  state.activeStage = index;
+  state.appendNext = false;
+  renderAll();
+}
+
+function removeStage(index) {
+  if (state.stages.length <= 1) return;
+  state.stages.splice(index, 1);
+  state.activeStage = Math.max(0, Math.min(state.activeStage, state.stages.length - 1));
+  state.appendNext = false;
+  renderAll();
+}
+
 function renderSidebar() {
   const list = document.getElementById('cmdList');
-  list.innerHTML = COMMANDS.map(c => `
-    <button class="cmd-btn" onclick="selectCmd('${c.name}')">
-      <span class="cmd-name">${c.name}</span>
-      <span class="cmd-desc">${c.full}</span>
+  const hint = document.getElementById('pipeHint');
+  const query = state.query.toLowerCase();
+  const active = getActiveStage();
+  const commands = getCommands().filter(c => `${c.name} ${c.full}`.toLowerCase().includes(query));
+  if (hint) hint.classList.toggle('show', state.appendNext);
+  list.innerHTML = commands.map(c => `
+    <button class="cmd-btn ${active && active.commandName === c.name && !state.appendNext ? 'active' : ''}" onclick="selectCmd('${escAttr(c.name)}')">
+      <span class="cmd-name">${esc(c.name)}</span>
+      <span class="cmd-desc">${esc(c.full)}</span>
     </button>
   `).join('');
 }
 
-// ─── SELECT COMMAND ───
-function selectCmd(name) {
-  state.cmd = name;
-  state.selectedFlags = new Set();
-  state.arg = '';
-  state.pipes = [];
-
-  // Update sidebar active
-  document.querySelectorAll('.cmd-btn').forEach(b => {
-    b.classList.toggle('active', b.querySelector('.cmd-name').textContent === name);
-  });
-
-  renderCard();
-  updateOutput();
+function renderPipeline() {
+  const el = document.getElementById('pipelineStrip');
+  if (!el) return;
+  el.innerHTML = state.stages.map((stage, i) => `
+    <button class="stage-chip ${i === state.activeStage && !state.appendNext ? 'active' : ''}" onclick="setActiveStage(${i})">
+      <span class="stage-index">${i === 0 ? 'base' : 'pipe ' + i}</span>
+      <strong>${esc(stage.commandName)}</strong>
+      ${state.stages.length > 1 ? `<span class="stage-remove" onclick="event.stopPropagation(); removeStage(${i})">x</span>` : ''}
+    </button>
+  `).join('') + `<button class="add-pipe-btn ${state.appendNext ? 'active' : ''}" onclick="startPipe()">${state.appendNext ? 'Cancel pipe' : '+ Pipe'}</button>`;
 }
 
-// ─── RENDER CARD ───
 function renderCard() {
-  const c = COMMANDS.find(x => x.name === state.cmd);
-  if (!c) return;
-
+  const stage = getActiveStage();
   const area = document.getElementById('cardArea');
+  if (!stage) {
+    area.innerHTML = '';
+    return;
+  }
+  const c = getCommand(stage.commandName);
+  const manHref = c.sourceUrl || `https://man7.org/linux/man-pages/man1/${c.name}.1.html`;
   area.innerHTML = `
     <div class="card">
       <div class="card-header">
-        <div class="card-cmd-name">${c.name}</div>
-        <div class="card-cmd-full">${c.full}</div>
-        <a class="card-man-link" href="https://man7.org/linux/man-pages/man1/${c.name}.1.html" target="_blank">man page ↗</a>
+        <div class="card-cmd-name">${esc(c.name)}</div>
+        <div class="card-cmd-full">${esc(c.full)}</div>
+        <a class="card-man-link" href="${escAttr(manHref)}" target="_blank" rel="noopener">man page</a>
       </div>
 
       <div class="options-section">
-        <div class="section-label">Options / Flags — click to toggle</div>
+        <div class="section-label">Options / flags</div>
         <div class="options-grid" id="optGrid">
           ${c.flags.map(f => `
-            <button class="opt-btn" onclick="toggleFlag('${escQ(f.f)}')">
-              <span class="opt-flag">${f.f}</span>
-              <span class="opt-desc">${f.d}</span>
+            <button class="opt-btn ${stage.selectedFlags.includes(f.f) ? 'selected' : ''}" data-flag="${escAttr(f.f)}">
+              <span class="opt-flag">${esc(f.f)}</span>
+              <span class="opt-desc">${esc(f.d)}</span>
             </button>
           `).join('')}
         </div>
@@ -969,143 +1106,137 @@ function renderCard() {
 
       ${c.arg ? `
       <div class="arg-section">
-        <span class="arg-label">${c.arg.label}</span>
-        <input class="arg-input" id="argInput" placeholder="${c.arg.placeholder}"
-          oninput="state.arg = this.value; updateOutput()" value="${state.arg}">
+        <span class="arg-label">${esc(c.arg.label)}</span>
+        <input class="arg-input" id="argInput" placeholder="${escAttr(c.arg.placeholder)}"
+          oninput="setArg(this.value)" value="${escAttr(stage.arg)}">
       </div>` : ''}
 
       <div class="pipe-section">
-        <div class="section-label">Pipe to — chain commands with |</div>
+        <div class="section-label">Pipeline</div>
         <div class="pipe-controls">
-          ${PIPE_CMDS.map((p, i) => `
-            <button class="pipe-btn" id="pb${i}" onclick="addPipe(${i})">
-              <span class="pipe-sym-icon">|</span> ${p.label}
-            </button>
-          `).join('')}
+          <button class="add-pipe-btn ${state.appendNext ? 'active' : ''}" onclick="startPipe()">${state.appendNext ? 'Cancel pipe' : '+ Add command after pipe'}</button>
         </div>
-        <div class="pipe-chain" id="pipeChain"></div>
       </div>
     </div>
   `;
-
-  renderPipeChain();
 }
 
-function escQ(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
-
-// ─── TOGGLE FLAG ───
-function toggleFlag(flag) {
-  if (state.selectedFlags.has(flag)) state.selectedFlags.delete(flag);
-  else state.selectedFlags.add(flag);
-
-  // Update button visuals
-  document.querySelectorAll('.opt-btn').forEach(b => {
-    const f = b.querySelector('.opt-flag').textContent;
-    b.classList.toggle('selected', state.selectedFlags.has(f));
-  });
-  updateOutput();
+function getFlagMeta(command, flag) {
+  return command.flags.find(item => item.f === flag) || { f: flag, d: 'use this option' };
 }
 
-// ─── PIPE ───
-function addPipe(idx) {
-  const p = PIPE_CMDS[idx];
-  if (p.arg) {
-    const val = prompt(`Arguments for "${p.label}":`, p.placeholder) ;
-    if (val === null) return;
-    state.pipes.push({ label: p.label, cmd: p.cmd.replace(/"".*|'[^']*'|\S+$/, val) + (val && !p.cmd.includes(val) ? ' ' + val : '') });
-    // simpler: just store label + user input
-    state.pipes[state.pipes.length-1] = { label: p.label + ' ' + val, cmd: p.label + ' ' + val };
-  } else {
-    state.pipes.push({ label: p.label, cmd: p.cmd });
-  }
-  renderPipeChain();
-  updateOutput();
-}
-
-function removePipe(i) {
-  state.pipes.splice(i, 1);
-  renderPipeChain();
-  updateOutput();
-}
-
-function renderPipeChain() {
-  const el = document.getElementById('pipeChain');
-  if (!el) return;
-  if (!state.pipes.length) { el.innerHTML = ''; return; }
-  el.innerHTML = state.pipes.map((p, i) => `
-    <div class="pipe-tag">
-      <span style="color:var(--pipe)">|</span> ${p.label}
-      <span class="pipe-tag-remove" onclick="removePipe(${i})">✕</span>
-    </div>
-  `).join('');
-}
-
-// ─── BUILD COMMAND STRING ───
-function buildCommand() {
-  if (!state.cmd) return '';
-  const flags = [...state.selectedFlags].join(' ');
-  const arg = state.arg.trim();
-  let parts = [state.cmd];
-  if (flags) parts.push(flags);
+function buildStageCommand(stage) {
+  const parts = [stage.commandName, ...stage.selectedFlags];
+  const arg = stage.arg.trim();
   if (arg) parts.push(arg);
-  let cmd = parts.join(' ');
-  if (state.pipes.length) {
-    cmd += ' ' + state.pipes.map(p => '| ' + p.cmd).join(' ');
-  }
-  return cmd;
+  return parts.join(' ');
 }
 
-// ─── UPDATE OUTPUT ───
+function buildCommand() {
+  return state.stages.map(buildStageCommand).join(' | ');
+}
+
+function stageSentence(stage, index) {
+  const command = getCommand(stage.commandName);
+  const flagText = stage.selectedFlags.map(flag => getFlagMeta(command, flag).d).join(', ');
+  const arg = stage.arg.trim();
+  let sentence = `${index === 0 ? 'Run' : 'Pipe the previous output into'} ${stage.commandName} to ${command.full}`;
+  if (flagText) sentence += `, with options to ${flagText}`;
+  if (arg) sentence += `, using ${arg} as ${command.arg.label.toLowerCase()}`;
+  return sentence + '.';
+}
+
+function updateExplanation() {
+  const text = document.getElementById('explainText');
+  const list = document.getElementById('explainList');
+  if (!text || !list) return;
+  text.textContent = state.stages.map(stageSentence).join(' ');
+  list.innerHTML = state.stages.map((stage, index) => {
+    const command = getCommand(stage.commandName);
+    const flags = stage.selectedFlags.length
+      ? stage.selectedFlags.map(flag => `${flag}: ${getFlagMeta(command, flag).d}`).join('; ')
+      : 'No flags selected yet.';
+    return `<li>${esc(index === 0 ? 'Base command' : 'Pipe ' + index)} - ${esc(flags)}</li>`;
+  }).join('');
+}
+
 function updateOutput() {
   const raw = buildCommand();
   const out = document.getElementById('cmdOutput');
   if (!raw) {
-    out.innerHTML = '<span style="color:var(--text3)">← select a command to begin</span>';
+    out.innerHTML = '<span style="color:var(--text3)">select a command to begin</span>';
     return;
   }
-
-  // Colorize
-  const c = COMMANDS.find(x => x.name === state.cmd);
-  const flags = [...state.selectedFlags];
-  const arg = state.arg.trim();
-
-  let html = `<span class="cmd-part">${state.cmd}</span>`;
-  if (flags.length) html += ` <span class="flag-part">${flags.join(' ')}</span>`;
-  if (arg) html += ` <span class="arg-part">${arg}</span>`;
-
-  state.pipes.forEach(p => {
-    html += ` <span class="pipe-sym">|</span><span class="cmd-part"> ${p.cmd.split(' ')[0]}</span>`;
-    const rest = p.cmd.split(' ').slice(1).join(' ');
-    if (rest) html += ` <span class="flag-part">${rest}</span>`;
-  });
-
-  out.innerHTML = html;
+  out.innerHTML = state.stages.map(stage => {
+    const flags = stage.selectedFlags.length ? ` <span class="flag-part">${esc(stage.selectedFlags.join(' '))}</span>` : '';
+    const arg = stage.arg.trim() ? ` <span class="arg-part">${esc(stage.arg.trim())}</span>` : '';
+    return `<span class="cmd-part">${esc(stage.commandName)}</span>${flags}${arg}`;
+  }).join(' <span class="pipe-sym">|</span> ');
+  updateExplanation();
 }
 
-// ─── COPY ───
+function renderAll() {
+  renderSidebar();
+  renderPipeline();
+  renderCard();
+  updateOutput();
+}
+
 function copyCommand() {
   const raw = buildCommand();
   if (!raw) return;
   navigator.clipboard.writeText(raw).then(() => {
     const btn = document.getElementById('copyBtn');
-    btn.textContent = '✓ copied!';
+    btn.textContent = 'Copied';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '⎘ copy'; btn.classList.remove('copied'); }, 1800);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1400);
   });
 }
 
-// ─── CLEAR ───
 function clearAll() {
-  state.selectedFlags = new Set();
-  state.arg = '';
-  state.pipes = [];
-  if (state.cmd) renderCard();
-  updateOutput();
+  state.stages = [createStage('ls')];
+  state.activeStage = 0;
+  state.appendNext = false;
+  renderAll();
 }
 
-// ─── INIT ───
-renderSidebar();
-selectCmd('ls');
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('shell-crafter-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
+}
+
+function escAttr(value) {
+  return esc(value).replace(/'/g, '&#39;');
+}
+
+const savedTheme = localStorage.getItem('shell-crafter-theme');
+const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+applyTheme(savedTheme || preferredTheme);
+
+document.getElementById('themeBtn')?.addEventListener('click', () => {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+});
+
+document.getElementById('cmdSearch')?.addEventListener('input', event => {
+  state.query = event.target.value;
+  renderSidebar();
+});
+
+document.addEventListener('click', event => {
+  const flagButton = event.target.closest('[data-flag]');
+  if (flagButton) toggleFlag(flagButton.dataset.flag);
+});
+
+state.stages = [createStage('ls')];
+renderAll();
+
+window.ShellCrafter = { registerCommand, getCommands, buildCommand };
 </script>
 </body>
 </html>
