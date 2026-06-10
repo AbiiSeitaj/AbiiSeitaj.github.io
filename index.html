@@ -1197,6 +1197,7 @@ function shortDesc(value) {
 function argDescription(command) {
   const label = (command.arg && command.arg.label ? command.arg.label : 'argument').toLowerCase();
   if (label === 'args' || label === 'extra args') return `extra arguments passed to ${command.name}`;
+  if (label.includes('pattern + file')) return `input pattern and file for ${command.name}`;
   if (label.includes('file')) return `input file for ${command.name}`;
   if (label.includes('path')) return `path used by ${command.name}`;
   if (label.includes('url')) return `URL requested by ${command.name}`;
