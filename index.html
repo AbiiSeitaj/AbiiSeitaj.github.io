@@ -614,6 +614,56 @@
   .header-badge { letter-spacing: .04em; }
   .opt-btn { align-items: center; }
   .opt-desc { line-height: 1.25; }
+
+  /* Token explanations */
+  .command-output .cmd-part { color:#f8c471; }
+  .command-output .flag-part { color:#93c5fd; }
+  .command-output .arg-part { color:#5eead4; }
+  .command-output .pipe-sym { color:#d8b4fe; }
+  .term-token {
+    border-radius:5px;
+    padding:2px 3px;
+    margin:0 1px;
+    cursor:help;
+    transition:background 120ms ease, box-shadow 120ms ease;
+  }
+  .term-token:hover, .term-token:focus-visible {
+    background:rgba(255,255,255,.10);
+    box-shadow:0 0 0 1px rgba(255,255,255,.16);
+    outline:0;
+  }
+  .explain-text { max-width:72ch; line-height:1.45; }
+  .explain-list { gap:7px; }
+  .explain-list li {
+    border-left:0;
+    padding:8px 10px;
+    border-radius:7px;
+    background:var(--panel2);
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .explain-kind {
+    min-width:70px;
+    color:var(--text3);
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .explain-code {
+    color:var(--blue3);
+    font-family:"SFMono-Regular",Consolas,monospace;
+    font-weight:800;
+  }
+  .explain-quote { color:var(--text2); }
+  .explain-list li.flag .explain-code { color:#2563eb; }
+  .explain-list li.arg .explain-code { color:#0f766e; }
+  .explain-list li.pipe .explain-code { color:#7c3aed; }
+  html[data-theme="dark"] .explain-list li.flag .explain-code { color:#93c5fd; }
+  html[data-theme="dark"] .explain-list li.arg .explain-code { color:#5eead4; }
+  html[data-theme="dark"] .explain-list li.pipe .explain-code { color:#d8b4fe; }
 </style>
 </head>
 <body>
@@ -1136,28 +1186,81 @@ function buildCommand() {
   return state.stages.map(buildStageCommand).join(' | ');
 }
 
-function stageSentence(stage, index) {
-  const command = getCommand(stage.commandName);
-  const flagText = stage.selectedFlags.map(flag => getFlagMeta(command, flag).d).join(', ');
-  const arg = stage.arg.trim();
-  let sentence = `${index === 0 ? 'Run' : 'Pipe the previous output into'} ${stage.commandName} to ${command.full}`;
-  if (flagText) sentence += `, with options to ${flagText}`;
-  if (arg) sentence += `, using ${arg} as ${command.arg.label.toLowerCase()}`;
-  return sentence + '.';
+function shortDesc(value) {
+  return String(value || '')
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\.$/, '')
+    .trim();
 }
 
-function updateExplanation() {
+function argDescription(command) {
+  const label = (command.arg && command.arg.label ? command.arg.label : 'argument').toLowerCase();
+  if (label === 'args' || label === 'extra args') return `extra arguments passed to ${command.name}`;
+  if (label.includes('file')) return `input file for ${command.name}`;
+  if (label.includes('path')) return `path used by ${command.name}`;
+  if (label.includes('url')) return `URL requested by ${command.name}`;
+  if (label.includes('host')) return `remote host for ${command.name}`;
+  return `${label} for ${command.name}`;
+}
+
+function explainRow(kind, code, description) {
+  return `<li class="${escAttr(kind.toLowerCase())}"><span class="explain-kind">${esc(kind)}</span><span class="explain-code">${esc(code)}</span><span class="explain-quote">"${esc(shortDesc(description))}"</span></li>`;
+}
+
+function renderDefaultExplanation() {
   const text = document.getElementById('explainText');
   const list = document.getElementById('explainList');
   if (!text || !list) return;
-  text.textContent = state.stages.map(stageSentence).join(' ');
+  text.textContent = 'Hover any colored command, flag, argument, or pipe in the terminal for a focused explanation.';
   list.innerHTML = state.stages.map((stage, index) => {
     const command = getCommand(stage.commandName);
-    const flags = stage.selectedFlags.length
-      ? stage.selectedFlags.map(flag => `${flag}: ${getFlagMeta(command, flag).d}`).join('; ')
-      : 'No flags selected yet.';
-    return `<li>${esc(index === 0 ? 'Base command' : 'Pipe ' + index)} - ${esc(flags)}</li>`;
-  }).join('');
+    const rows = [explainRow(index === 0 ? 'Command' : 'Pipe cmd', stage.commandName, command.full)];
+    stage.selectedFlags.forEach(flag => {
+      const meta = getFlagMeta(command, flag);
+      rows.push(explainRow('Flag', meta.f, meta.d));
+    });
+    if (stage.arg.trim()) rows.push(explainRow('Arg', stage.arg.trim(), argDescription(command)));
+    return rows.join('');
+  }).join('') || explainRow('Command', 'none', 'select a command to begin');
+}
+
+function renderFocusedExplanation(detail) {
+  const text = document.getElementById('explainText');
+  const list = document.getElementById('explainList');
+  if (!text || !list || !detail) return;
+  text.textContent = detail.title;
+  list.innerHTML = explainRow(detail.kind, detail.code, detail.description);
+}
+
+function tokenDetail(stageIndex, kind, value) {
+  const stage = state.stages[stageIndex];
+  if (!stage) return null;
+  const command = getCommand(stage.commandName);
+  if (kind === 'command') {
+    return { kind: 'Command', code: command.name, title: 'Command name', description: command.full };
+  }
+  if (kind === 'flag') {
+    const meta = getFlagMeta(command, value);
+    return { kind: 'Flag', code: meta.f, title: 'Selected flag', description: meta.d };
+  }
+  if (kind === 'arg') {
+    return { kind: 'Arg', code: value, title: 'Argument value', description: argDescription(command) };
+  }
+  if (kind === 'pipe') {
+    const nextStage = state.stages[stageIndex + 1];
+    const nextCommand = nextStage ? getCommand(nextStage.commandName) : null;
+    return { kind: 'Pipe', code: '|', title: 'Pipeline connector', description: nextCommand ? `send output into ${nextCommand.name}` : 'send output into the next command' };
+  }
+  return null;
+}
+
+function updateExplanation() {
+  renderDefaultExplanation();
+}
+
+function renderToken(kind, stageIndex, value, className) {
+  return `<span class="term-token ${className}" tabindex="0" data-kind="${escAttr(kind)}" data-stage="${stageIndex}" data-value="${escAttr(value)}">${esc(value)}</span>`;
 }
 
 function updateOutput() {
@@ -1167,14 +1270,16 @@ function updateOutput() {
     out.innerHTML = '<span style="color:var(--text3)">select a command to begin</span>';
     return;
   }
-  out.innerHTML = state.stages.map(stage => {
-    const flags = stage.selectedFlags.length ? ` <span class="flag-part">${esc(stage.selectedFlags.join(' '))}</span>` : '';
-    const arg = stage.arg.trim() ? ` <span class="arg-part">${esc(stage.arg.trim())}</span>` : '';
-    return `<span class="cmd-part">${esc(stage.commandName)}</span>${flags}${arg}`;
-  }).join(' <span class="pipe-sym">|</span> ');
+  out.innerHTML = state.stages.map((stage, index) => {
+    const flagHtml = stage.selectedFlags.map(flag => ' ' + renderToken('flag', index, flag, 'flag-part')).join('');
+    const arg = stage.arg.trim();
+    const argHtml = arg ? ' ' + renderToken('arg', index, arg, 'arg-part') : '';
+    const stageHtml = `${renderToken('command', index, stage.commandName, 'cmd-part')}${flagHtml}${argHtml}`;
+    if (index === state.stages.length - 1) return stageHtml;
+    return `${stageHtml} ${renderToken('pipe', index, '|', 'pipe-sym')}`;
+  }).join(' ');
   updateExplanation();
 }
-
 function renderAll() {
   renderSidebar();
   renderPipeline();
@@ -1199,7 +1304,6 @@ function clearAll() {
   state.appendNext = false;
   renderAll();
 }
-
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('shell-crafter-theme', theme);
@@ -1233,6 +1337,26 @@ document.addEventListener('click', event => {
   if (flagButton) toggleFlag(flagButton.dataset.flag);
 });
 
+
+document.getElementById('cmdOutput')?.addEventListener('mouseover', event => {
+  const token = event.target.closest('.term-token');
+  if (!token) return;
+  renderFocusedExplanation(tokenDetail(Number(token.dataset.stage), token.dataset.kind, token.dataset.value));
+});
+
+document.getElementById('cmdOutput')?.addEventListener('focusin', event => {
+  const token = event.target.closest('.term-token');
+  if (!token) return;
+  renderFocusedExplanation(tokenDetail(Number(token.dataset.stage), token.dataset.kind, token.dataset.value));
+});
+
+document.getElementById('cmdOutput')?.addEventListener('mouseout', event => {
+  const fromToken = event.target.closest('.term-token');
+  const toToken = event.relatedTarget && event.relatedTarget.closest ? event.relatedTarget.closest('.term-token') : null;
+  if (fromToken && !toToken) updateExplanation();
+});
+
+document.getElementById('cmdOutput')?.addEventListener('focusout', updateExplanation);
 state.stages = [createStage('ls')];
 renderAll();
 
