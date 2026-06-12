@@ -1,10 +1,11 @@
-# Shell Crafter
+# CmdCrafter
 
-Shell Crafter is a static command builder for Linux shell workflows. It helps users compose commands, inspect common flags, add arguments, and connect commands into pipelines without installing a backend or build toolchain.
+CmdCrafter is a static command builder for Linux shell workflows. It helps users compose commands, inspect common flags, add arguments, and connect commands into pipelines without installing a backend or build toolchain.
 
 ## Features
 
 - Searchable command catalog for common Linux administration commands.
+- Workflow presets for common command shapes such as disk usage, service errors, endpoint checks, and match counting.
 - Click-to-toggle flags with short descriptions.
 - Argument inputs tailored to each command.
 - Pipeline builder for chaining commands with `|`.
@@ -29,10 +30,10 @@ README.md    Repository documentation
 
 ## Extension points
 
-The command registry is exposed through `window.ShellCrafter`. Additional commands can be registered at runtime with:
+The command registry is exposed through `window.CmdCrafter`. The legacy `window.ShellCrafter` alias remains available for compatibility. Additional commands can be registered at runtime with:
 
 ```js
-window.ShellCrafter.registerCommand({
+window.CmdCrafter.registerCommand({
   name: "example",
   full: "describe the command",
   flags: [

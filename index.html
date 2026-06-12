@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Shell Crafter is a zero-dependency command builder for composing Linux shell commands and pipelines.">
-<meta property="og:title" content="Shell Crafter">
+<meta name="description" content="CmdCrafter is a zero-dependency command builder for composing Linux shell commands and pipelines.">
+<meta property="og:title" content="CmdCrafter">
 <meta property="og:description" content="Build Linux shell commands, inspect flags, and compose pipelines from a static GitHub Pages app.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#f6f7f9">
-<title>Shell Crafter</title>
+<title>CmdCrafter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -570,7 +570,7 @@
     .cmd-btn { flex: 1; min-width: 120px; }
   }
 
-  /* Shell Crafter refresh: calmer UI, light/dark themes, pipeline workflow */
+  /* CmdCrafter refresh: calmer UI, light/dark themes, pipeline workflow */
   :root {
     color-scheme: light;
     --bg:#f6f7f9; --bg2:#eef1f5; --bg3:#e6eaf0; --panel:#fff; --panel2:#f2f4f7;
@@ -587,9 +587,11 @@
   }
   body { background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.45; }
   body::before, body::after, .orb2 { display:none; }
-  header { position:sticky; top:0; padding:14px 24px; background:color-mix(in srgb,var(--panel) 90%,transparent); border-bottom-color:var(--border); box-shadow:none; }
+  header { position:sticky; top:0; padding:12px 24px; background:color-mix(in srgb,var(--panel) 92%,transparent); border-bottom-color:var(--border); box-shadow:none; }
   .logo::before { content:"$"; width:34px; height:34px; border-radius:8px; display:grid; place-items:center; background:var(--text); color:var(--bg); font-family:"SFMono-Regular",Consolas,monospace; font-weight:800; }
   .logo-icon{display:none;} .logo-text { font-family:inherit; font-size:1rem; letter-spacing:0; } .logo-text span { color:inherit; }
+  .brand-stack { display:grid; gap:1px; }
+  .logo-sub { color:var(--text3); font-size:.72rem; }
   .header-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .theme-btn { background:transparent; border:1px solid var(--border2); color:var(--text2); border-radius:7px; min-height:36px; padding:0 12px; cursor:pointer; }
   .theme-btn:hover { border-color:var(--blue); color:var(--blue3); }
@@ -604,6 +606,9 @@
   .cmd-btn { background:transparent; border-color:transparent; color:var(--text2); display:grid; grid-template-columns:64px minmax(0,1fr); width:100%; }
   .cmd-btn:hover { background:var(--panel2); border-color:transparent; } .cmd-btn.active { background:color-mix(in srgb,var(--blue) 12%,var(--panel)); border-color:var(--blue); color:var(--blue3); }
   .cmd-btn .cmd-name, .cmd-btn.active .cmd-name { color:var(--blue3); }
+  .sidebar-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .cmd-count { color:var(--text3); font-size:.72rem; white-space:nowrap; }
+  .empty-state { color:var(--text3); border:1px dashed var(--border2); border-radius:7px; padding:12px; font-size:.84rem; }
   .terminal-box,.card,.explain-box,.pipeline-strip { background:var(--panel); border-color:var(--border); border-radius:8px; box-shadow:var(--shadow); }
   .terminal-box { background:#10141b; overflow:hidden; } html[data-theme="dark"] .terminal-box { background:#0a0d12; }
   .terminal-header { background:transparent; border-bottom-color:rgba(255,255,255,.08); } .terminal-title,.dot { opacity:.75; }
@@ -681,6 +686,67 @@
   html[data-theme="dark"] .explain-list li.flag .explain-code { color:#93c5fd; }
   html[data-theme="dark"] .explain-list li.arg .explain-code { color:#5eead4; }
   html[data-theme="dark"] .explain-list li.pipe .explain-code { color:#d8b4fe; }
+  .recipe-bar {
+    display:grid;
+    gap:10px;
+    padding:14px 16px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--panel);
+  }
+  .recipe-head {
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .recipe-title { color:var(--text); font-size:.9rem; font-weight:800; }
+  .recipe-note { color:var(--text3); font-size:.78rem; }
+  .recipe-list {
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
+  .recipe-btn {
+    min-height:42px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    background:var(--panel2);
+    color:var(--text);
+    cursor:pointer;
+    display:grid;
+    gap:2px;
+    padding:8px 10px;
+    text-align:left;
+    font-family:inherit;
+  }
+  .recipe-btn:hover, .recipe-btn:focus-visible {
+    border-color:var(--blue);
+    background:color-mix(in srgb,var(--blue) 8%,var(--panel));
+    outline:0;
+  }
+  .recipe-label { font-size:.84rem; font-weight:800; }
+  .recipe-command {
+    color:var(--text3);
+    font-family:"SFMono-Regular",Consolas,monospace;
+    font-size:.72rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .terminal-actions { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  @media (max-width:900px) {
+    .container { grid-template-columns:1fr; padding-inline:16px; }
+    .main { order:1; }
+    .sidebar { order:2; position:static; }
+    .cmd-list { max-height:none; }
+    .recipe-list { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width:620px) {
+    .recipe-list { grid-template-columns:1fr; }
+    .recipe-head { display:grid; }
+    .terminal-actions { margin-left:0; }
+  }
 </style>
 </head>
 <body>
@@ -689,34 +755,51 @@
 <header>
   <div class="logo">
     <div class="logo-icon"></div>
-    <div class="logo-text">Shell<span> Crafter</span></div>
+    <div class="brand-stack">
+      <div class="logo-text">Cmd<span>Crafter</span></div>
+      <div class="logo-sub">Linux command workbench</div>
+    </div>
   </div>
-  <div class="header-actions"><button class="theme-btn" id="themeBtn" type="button">Dark</button><div class="header-badge">Static - GitHub Pages ready</div></div>
+  <div class="header-actions"><button class="theme-btn" id="themeBtn" type="button">Dark</button><div class="header-badge" id="commandTotal">Commands</div></div>
 </header>
 
 <div class="container">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-label">Commands</div><input class="cmd-search" id="cmdSearch" type="search" placeholder="Search commands"><div class="pipe-hint" id="pipeHint">Choose the next command for the pipeline.</div>
+    <div class="sidebar-top">
+      <div class="sidebar-label">Command library</div>
+      <div class="cmd-count" id="cmdCount"></div>
+    </div>
+    <input class="cmd-search" id="cmdSearch" type="search" placeholder="Search grep, logs, disk">
+    <div class="pipe-hint" id="pipeHint">Choose the next command for the pipeline.</div>
     <div class="cmd-list" id="cmdList"></div>
   </aside>
 
   <!-- MAIN -->
   <main class="main">
-    <h1 class="sr-only">Shell Crafter command builder</h1>
+    <h1 class="sr-only">CmdCrafter command builder</h1>
+    <section class="recipe-bar" aria-label="Command starters">
+      <div class="recipe-head">
+        <div class="recipe-title">Start from a working shape</div>
+        <div class="recipe-note">Ops, files, network, processes</div>
+      </div>
+      <div class="recipe-list" id="recipeList"></div>
+    </section>
     <!-- Terminal output -->
     <div class="terminal-box">
       <div class="terminal-header">
         <div class="dot dot-r"></div>
         <div class="dot dot-y"></div>
         <div class="dot dot-g"></div>
-        <span class="terminal-title">bash command</span>
+        <span class="terminal-title">command line</span>
       </div>
       <div class="terminal-body">
         <span class="prompt">user@host:~$</span>
         <div class="command-output" id="cmdOutput"><span style="color:var(--text3)">select a command to begin</span></div>
-        <button class="copy-btn" id="copyBtn" onclick="copyCommand()">Copy</button>
-        <button class="clear-btn" onclick="clearAll()">Clear</button>
+        <div class="terminal-actions">
+          <button class="copy-btn" id="copyBtn" onclick="copyCommand()">Copy</button>
+          <button class="clear-btn" onclick="clearAll()">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -733,7 +816,7 @@
   </main>
 </div>
 
-<footer>Shell Crafter - free to host, zero dependencies - built for sysadmins</footer>
+<footer>CmdCrafter - static, zero dependencies, built for command-line work</footer>
 
 <script>
 const COMMANDS = [
@@ -1026,7 +1109,37 @@ const COMMANDS = [
   },
 ];
 
-// Command registry. A future man-page importer can call ShellCrafter.registerCommand({...}).
+const RECIPES = [
+  {
+    label: 'Disk usage',
+    stages: [{ commandName: 'du', selectedFlags: ['-h', '--max-depth=1'], arg: '.' }]
+  },
+  {
+    label: 'Service errors',
+    stages: [{ commandName: 'journalctl', selectedFlags: ['-u svcname', '-p err', '-n 50'], arg: '' }]
+  },
+  {
+    label: 'Large logs',
+    stages: [{ commandName: 'find', selectedFlags: ['-type f', '-name "*.log"', '-size +100M'], arg: '/var/log' }]
+  },
+  {
+    label: 'Endpoint check',
+    stages: [{ commandName: 'curl', selectedFlags: ['-I', '-L'], arg: 'https://example.com' }]
+  },
+  {
+    label: 'Process load',
+    stages: [{ commandName: 'ps', selectedFlags: ['aux', '--sort=-%cpu'], arg: '' }]
+  },
+  {
+    label: 'Count matches',
+    stages: [
+      { commandName: 'grep', selectedFlags: ['-r', '-n'], arg: '"pattern" src' },
+      { commandName: 'wc', selectedFlags: ['-l'], arg: '' }
+    ]
+  }
+];
+
+// Command registry. A future man-page importer can call CmdCrafter.registerCommand({...}).
 const commandRegistry = new Map();
 COMMANDS.forEach(command => commandRegistry.set(command.name, command));
 
@@ -1060,6 +1173,14 @@ function getCommand(name) {
 
 function createStage(commandName) {
   return { commandName, selectedFlags: [], arg: '' };
+}
+
+function hydrateStage(stage) {
+  return {
+    commandName: stage.commandName,
+    selectedFlags: [...(stage.selectedFlags || [])],
+    arg: stage.arg || ''
+  };
 }
 
 function getActiveStage() {
@@ -1116,13 +1237,47 @@ function removeStage(index) {
   renderAll();
 }
 
+function applyRecipe(index) {
+  const recipe = RECIPES[index];
+  if (!recipe) return;
+  state.stages = recipe.stages.map(hydrateStage);
+  state.activeStage = 0;
+  state.appendNext = false;
+  renderAll();
+}
+
+function summarizeRecipe(recipe) {
+  return recipe.stages
+    .map(stage => buildStageCommand(hydrateStage(stage)))
+    .join(' | ');
+}
+
+function renderRecipes() {
+  const list = document.getElementById('recipeList');
+  if (!list) return;
+  list.innerHTML = RECIPES.map((recipe, index) => `
+    <button class="recipe-btn" type="button" onclick="applyRecipe(${index})">
+      <span class="recipe-label">${esc(recipe.label)}</span>
+      <span class="recipe-command">${esc(summarizeRecipe(recipe))}</span>
+    </button>
+  `).join('');
+}
+
 function renderSidebar() {
   const list = document.getElementById('cmdList');
   const hint = document.getElementById('pipeHint');
+  const count = document.getElementById('cmdCount');
+  const total = document.getElementById('commandTotal');
   const query = state.query.toLowerCase();
   const active = getActiveStage();
   const commands = getCommands().filter(c => `${c.name} ${c.full}`.toLowerCase().includes(query));
   if (hint) hint.classList.toggle('show', state.appendNext);
+  if (count) count.textContent = `${commands.length}/${commandRegistry.size}`;
+  if (total) total.textContent = `${commandRegistry.size} commands`;
+  if (!commands.length) {
+    list.innerHTML = '<div class="empty-state">No command matches this search.</div>';
+    return;
+  }
   list.innerHTML = commands.map(c => `
     <button class="cmd-btn ${active && active.commandName === c.name && !state.appendNext ? 'active' : ''}" onclick="selectCmd('${escAttr(c.name)}')">
       <span class="cmd-name">${esc(c.name)}</span>
@@ -1231,7 +1386,7 @@ function renderDefaultExplanation() {
   const text = document.getElementById('explainText');
   const list = document.getElementById('explainList');
   if (!text || !list) return;
-  text.textContent = 'Hover any colored command, flag, argument, or pipe in the terminal for a focused explanation.';
+  text.textContent = 'Current command breakdown.';
   list.innerHTML = state.stages.map((stage, index) => {
     const command = getCommand(stage.commandName);
     const rows = [explainRow(index === 0 ? 'Command' : 'Pipe cmd', stage.commandName, command.full)];
@@ -1300,6 +1455,7 @@ function updateOutput() {
   updateExplanation();
 }
 function renderAll() {
+  renderRecipes();
   renderSidebar();
   renderPipeline();
   renderCard();
@@ -1325,7 +1481,7 @@ function clearAll() {
 }
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
-  localStorage.setItem('shell-crafter-theme', theme);
+  localStorage.setItem('cmdcrafter-theme', theme);
   const btn = document.getElementById('themeBtn');
   if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
 }
@@ -1338,7 +1494,7 @@ function escAttr(value) {
   return esc(value).replace(/'/g, '&#39;');
 }
 
-const savedTheme = localStorage.getItem('shell-crafter-theme');
+const savedTheme = localStorage.getItem('cmdcrafter-theme') || localStorage.getItem('shell-crafter-theme');
 const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 applyTheme(savedTheme || preferredTheme);
 
@@ -1376,10 +1532,11 @@ document.getElementById('cmdOutput')?.addEventListener('mouseout', event => {
 });
 
 document.getElementById('cmdOutput')?.addEventListener('focusout', updateExplanation);
-state.stages = [createStage('ls')];
+state.stages = RECIPES[0].stages.map(hydrateStage);
 renderAll();
 
-window.ShellCrafter = { registerCommand, getCommands, buildCommand };
+window.CmdCrafter = { registerCommand, getCommands, buildCommand, applyRecipe };
+window.ShellCrafter = window.CmdCrafter;
 </script>
 </body>
 </html>
