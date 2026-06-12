@@ -686,6 +686,71 @@
   html[data-theme="dark"] .explain-list li.flag .explain-code { color:#93c5fd; }
   html[data-theme="dark"] .explain-list li.arg .explain-code { color:#5eead4; }
   html[data-theme="dark"] .explain-list li.pipe .explain-code { color:#d8b4fe; }
+  .quick-arg-area {
+    display:flex;
+    justify-content:flex-end;
+  }
+  .quick-arg-card {
+    width:min(620px, 100%);
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--panel);
+  }
+  .quick-arg-label {
+    color:var(--text3);
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .quick-arg-input {
+    min-width:0;
+    min-height:40px;
+    border:1px solid var(--border2);
+    border-radius:7px;
+    background:var(--bg2);
+    color:var(--green);
+    font:inherit;
+    font-family:"SFMono-Regular",Consolas,monospace;
+    padding:0 12px;
+    outline:0;
+  }
+  .quick-arg-input:focus {
+    border-color:var(--blue);
+    background:var(--panel);
+  }
+  .explain-text {
+    cursor:pointer;
+    border-radius:7px;
+    padding:8px 10px;
+    background:var(--panel2);
+  }
+  .explain-text:focus-visible {
+    outline:2px solid var(--blue);
+    outline-offset:2px;
+  }
+  .explain-text .sentence-command {
+    color:var(--blue3);
+    font-family:"SFMono-Regular",Consolas,monospace;
+    font-weight:800;
+  }
+  .explain-text .sentence-arg {
+    color:var(--green);
+    font-family:"SFMono-Regular",Consolas,monospace;
+    font-weight:800;
+  }
+  .explain-text .sentence-flag {
+    color:var(--text);
+    font-family:"SFMono-Regular",Consolas,monospace;
+    font-weight:700;
+  }
+  .explain-list { display:none; }
+  .explain-list.show-details { display:grid; }
   .recipe-bar {
     display:grid;
     gap:10px;
@@ -743,6 +808,7 @@
     .recipe-list { grid-template-columns:repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width:620px) {
+    .quick-arg-card { grid-template-columns:1fr; }
     .recipe-list { grid-template-columns:1fr; }
     .recipe-head { display:grid; }
     .terminal-actions { margin-left:0; }
@@ -803,9 +869,11 @@
       </div>
     </div>
 
+    <div class="quick-arg-area" id="quickArgArea"></div>
+
     <section class="explain-box" aria-label="Command explanation">
       <div class="section-label">What this command does</div>
-      <div class="explain-text" id="explainText"></div>
+      <div class="explain-text" id="explainText" role="button" tabindex="0" aria-expanded="false"></div>
       <ul class="explain-list" id="explainList"></ul>
     </section>
 
@@ -1147,6 +1215,7 @@ let state = {
   activeStage: 0,
   appendNext: false,
   query: '',
+  showDetails: false,
   stages: []
 };
 
@@ -1188,6 +1257,7 @@ function getActiveStage() {
 }
 
 function selectCmd(name) {
+  state.showDetails = false;
   if (!state.stages.length) {
     state.stages.push(createStage(name));
     state.activeStage = 0;
@@ -1226,6 +1296,7 @@ function startPipe() {
 function setActiveStage(index) {
   state.activeStage = index;
   state.appendNext = false;
+  state.showDetails = false;
   renderAll();
 }
 
@@ -1243,6 +1314,7 @@ function applyRecipe(index) {
   state.stages = recipe.stages.map(hydrateStage);
   state.activeStage = 0;
   state.appendNext = false;
+  state.showDetails = false;
   renderAll();
 }
 
@@ -1327,13 +1399,6 @@ function renderCard() {
         </div>
       </div>
 
-      ${c.arg ? `
-      <div class="arg-section">
-        <span class="arg-label">${esc(c.arg.label)}</span>
-        <input class="arg-input" id="argInput" placeholder="${escAttr(c.arg.placeholder)}"
-          oninput="setArg(this.value)" value="${escAttr(stage.arg)}">
-      </div>` : ''}
-
       <div class="pipe-section">
         <div class="section-label">Pipeline</div>
         <div class="pipe-controls">
@@ -1341,6 +1406,24 @@ function renderCard() {
         </div>
       </div>
     </div>
+  `;
+}
+
+function renderQuickArg() {
+  const area = document.getElementById('quickArgArea');
+  const stage = getActiveStage();
+  if (!area || !stage) return;
+  const command = getCommand(stage.commandName);
+  if (!command || !command.arg) {
+    area.innerHTML = '';
+    return;
+  }
+  area.innerHTML = `
+    <label class="quick-arg-card">
+      <span class="quick-arg-label">${esc(command.arg.label)}</span>
+      <input class="quick-arg-input" id="quickArgInput" placeholder="${escAttr(command.arg.placeholder)}"
+        oninput="setArg(this.value)" value="${escAttr(stage.arg)}">
+    </label>
   `;
 }
 
@@ -1382,11 +1465,23 @@ function explainRow(kind, code, description) {
   return `<li class="${escAttr(kind.toLowerCase())}"><span class="explain-kind">${esc(kind)}</span><span class="explain-code">${esc(code)}</span><span class="explain-quote">"${esc(shortDesc(description))}"</span></li>`;
 }
 
+function commandPhrase(stage, index) {
+  const command = getCommand(stage.commandName);
+  const commandText = `<span class="sentence-command">${esc(stage.commandName)}</span>`;
+  const flags = stage.selectedFlags.map(flag => `<span class="sentence-flag">${esc(flag)}</span>`);
+  const arg = stage.arg.trim();
+  const argText = arg ? ` for <span class="sentence-arg">${esc(arg)}</span>` : '';
+  const flagText = flags.length ? ` with ${flags.join(' and ')}` : '';
+  const prefix = index === 0 ? 'Run' : 'then pipe into';
+  return `${prefix} ${commandText}${flagText}${argText} to ${esc(shortDesc(command.full))}`;
+}
+
 function renderDefaultExplanation() {
   const text = document.getElementById('explainText');
   const list = document.getElementById('explainList');
   if (!text || !list) return;
-  text.textContent = 'Current command breakdown.';
+  text.setAttribute('aria-expanded', String(state.showDetails));
+  text.innerHTML = `${state.stages.map(commandPhrase).join(', ')}.`;
   list.innerHTML = state.stages.map((stage, index) => {
     const command = getCommand(stage.commandName);
     const rows = [explainRow(index === 0 ? 'Command' : 'Pipe cmd', stage.commandName, command.full)];
@@ -1397,14 +1492,12 @@ function renderDefaultExplanation() {
     if (stage.arg.trim()) rows.push(explainRow('Arg', stage.arg.trim(), argDescription(command)));
     return rows.join('');
   }).join('') || explainRow('Command', 'none', 'select a command to begin');
+  list.classList.toggle('show-details', state.showDetails);
 }
 
-function renderFocusedExplanation(detail) {
-  const text = document.getElementById('explainText');
-  const list = document.getElementById('explainList');
-  if (!text || !list || !detail) return;
-  text.textContent = detail.title;
-  list.innerHTML = explainRow(detail.kind, detail.code, detail.description);
+function toggleExplanationDetails() {
+  state.showDetails = !state.showDetails;
+  updateExplanation();
 }
 
 function tokenDetail(stageIndex, kind, value) {
@@ -1459,6 +1552,7 @@ function renderAll() {
   renderSidebar();
   renderPipeline();
   renderCard();
+  renderQuickArg();
   updateOutput();
 }
 
@@ -1513,25 +1607,12 @@ document.addEventListener('click', event => {
 });
 
 
-document.getElementById('cmdOutput')?.addEventListener('mouseover', event => {
-  const token = event.target.closest('.term-token');
-  if (!token) return;
-  renderFocusedExplanation(tokenDetail(Number(token.dataset.stage), token.dataset.kind, token.dataset.value));
+document.getElementById('explainText')?.addEventListener('click', toggleExplanationDetails);
+document.getElementById('explainText')?.addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  toggleExplanationDetails();
 });
-
-document.getElementById('cmdOutput')?.addEventListener('focusin', event => {
-  const token = event.target.closest('.term-token');
-  if (!token) return;
-  renderFocusedExplanation(tokenDetail(Number(token.dataset.stage), token.dataset.kind, token.dataset.value));
-});
-
-document.getElementById('cmdOutput')?.addEventListener('mouseout', event => {
-  const fromToken = event.target.closest('.term-token');
-  const toToken = event.relatedTarget && event.relatedTarget.closest ? event.relatedTarget.closest('.term-token') : null;
-  if (fromToken && !toToken) updateExplanation();
-});
-
-document.getElementById('cmdOutput')?.addEventListener('focusout', updateExplanation);
 state.stages = RECIPES[0].stages.map(hydrateStage);
 renderAll();
 
